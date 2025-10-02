@@ -6,6 +6,7 @@ import jakarta.validation.Valid;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
 import com.senai.crud_usuarios.dtos.RequisicaoDto;
@@ -13,7 +14,7 @@ import com.senai.crud_usuarios.dtos.RespostaDto;
 import com.senai.crud_usuarios.models.UsuarioModel;
 import com.senai.crud_usuarios.services.UsuarioService;
 
-@RestController
+@Controller
 @RequestMapping("/api/usuarios")
 public class UsuarioController {
 

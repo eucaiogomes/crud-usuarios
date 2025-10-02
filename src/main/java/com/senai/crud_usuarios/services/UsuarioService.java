@@ -126,4 +126,14 @@ public class UsuarioService {
             return usuarioDto;
         });
     }
+
+    // Autentica um usuário por email e senha na lista em memória
+    public Optional<UsuarioModel> autenticar(String email, String senha) {
+        if (email == null || senha == null) {
+            return Optional.empty();
+        }
+        return listaUsuarios.stream()
+                .filter(u -> u.getEmailUsuario().equalsIgnoreCase(email) && u.getSenhaUsuario().equals(senha))
+                .findFirst();
+    }
 }
