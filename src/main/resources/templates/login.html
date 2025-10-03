@@ -4,41 +4,231 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Login</title>
-    <link rel="stylesheet" href="/static/styles.css" />
+    <link rel="stylesheet" href="/styles.css" />
 </head>
 <body>
-    <h1>Login</h1>
-    <div th:if="${erro}" style="color: red; margin-bottom: 1rem;"> 
-        <p th:text="${erro}"></p>
-    </div>
-    <div th:if="${sucesso}" style="color: green; margin-bottom: 1rem;"> 
-        <p th:text="${sucesso}"></p>
-    </div>
-    <form method="post" action="/login">
-        <label for="email">Email:</label>
-        <input id="email" name="email" type="email" required />
-        <br />
-        <label for="senha">Senha:</label>
-        <input id="senha" name="senha" type="password" required minlength="6" />
-        <br />
-        <button type="submit">Entrar</button>
-    </form>
+    <div class="page">
+        <aside class="sidebar">
+            <h2>Bloco de notas</h2>
+            <textarea id="notepad" placeholder="Escreva suas notas aqui..."></textarea>
+            <div class="sidebar-actions">
+                <button id="saveNote" type="button">Salvar</button>
+                <button id="clearNote" type="button">Limpar</button>
+            </div>
+            <div id="notepad-msg" class="message-info" aria-live="polite"></div>
+            
+            <hr />
+            <div class="calculator">
+                <h3>Mini calculadora</h3>
+                <div class="calc-row">
+                    <input id="calc-a" type="number" placeholder="0" />
+                    <select id="calc-op">
+                        <option value="+">+</option>
+                        <option value="-">-</option>
+                        <option value="*">×</option>
+                        <option value="/">÷</option>
+                    </select>
+                    <input id="calc-b" type="number" placeholder="0" />
+                </div>
+                <!-- Pomodoro script -->
+                <script>
+                    const pomDisplay = document.getElementById('pomDisplay');
+                    const pomMode = document.getElementById('pomMode');
+                    const pomStart = document.getElementById('pomStart');
+                    const pomPause = document.getElementById('pomPause');
+                    const pomReset = document.getElementById('pomReset');
+                    const pomSessions = document.getElementById('pomSessions');
 
-    <hr />
-    <h2>Cadastro</h2>
-    <div id="cadastro-mensagem" style="margin-bottom: 1rem; color: green;"></div>
-    <form id="cadastroForm">
-        <label for="nome">Nome:</label>
-        <input id="nome" name="nome" type="text" required />
-        <br />
-        <label for="emailCadastro">Email:</label>
-        <input id="emailCadastro" name="email" type="email" required />
-        <br />
-        <label for="senhaCadastro">Senha:</label>
-        <input id="senhaCadastro" name="senha" type="password" required minlength="6" />
-        <br />
-        <button type="submit">Cadastrar</button>
-    </form>
+                    const MODES = { work:25*60, short:5*60, long:15*60 };
+                    let pomSeconds = MODES.work; let pomInterval = null; let sessions = 0;
+
+                    function formatTime(s){ const m = Math.floor(s/60); const sec = s%60; return `${String(m).padStart(2,'0')}:${String(sec).padStart(2,'0')}` }
+                    function renderPom(){ pomDisplay.textContent = formatTime(pomSeconds); }
+
+                    pomMode.addEventListener('change', ()=>{ pomSeconds = MODES[pomMode.value]; renderPom(); });
+
+                    function pomStartFn(){ if(pomInterval) return; pomInterval = setInterval(()=>{ pomSeconds--; if(pomSeconds<=0){ clearInterval(pomInterval); pomInterval=null; // terminar
+                        if(pomMode.value==='work'){ sessions++; pomSessions.textContent = sessions; pomMode.value='short'; pomSeconds = MODES.short; }
+                        else pomSeconds = MODES.work; renderPom(); return; } renderPom(); }, 1000); }
+
+                    function pomPauseFn(){ if(pomInterval){ clearInterval(pomInterval); pomInterval=null; } }
+                    function pomResetFn(){ pomPauseFn(); pomMode.value='work'; pomSeconds = MODES.work; renderPom(); }
+
+                    pomStart.addEventListener('click', pomStartFn);
+                    pomPause.addEventListener('click', pomPauseFn);
+                    pomReset.addEventListener('click', pomResetFn);
+
+                    renderPom();
+                </script>
+                <div class="calc-actions">
+                    <button id="calc-calc" type="button">Calcular</button>
+                    <button id="calc-clear" type="button">Limpar</button>
+                </div>
+                <div id="calc-result" class="message-info" aria-live="polite"></div>
+            </div>
+            
+            <hr />
+            <div class="tictactoe">
+                <h3>Jogo da Velha</h3>
+                <div id="ttt-status" class="message-info"></div>
+                <div class="ttt-board" id="ttt-board" role="grid" aria-label="Tabuleiro do jogo da velha">
+                    <button class="ttt-cell" data-pos="0"></button>
+                    <button class="ttt-cell" data-pos="1"></button>
+                    <button class="ttt-cell" data-pos="2"></button>
+                    <button class="ttt-cell" data-pos="3"></button>
+                    <button class="ttt-cell" data-pos="4"></button>
+                    <button class="ttt-cell" data-pos="5"></button>
+                    <button class="ttt-cell" data-pos="6"></button>
+                    <button class="ttt-cell" data-pos="7"></button>
+                    <button class="ttt-cell" data-pos="8"></button>
+                </div>
+                <div class="ttt-actions">
+                    <button id="ttt-reset" type="button">Reiniciar</button>
+                </div>
+            </div>
+            
+            <hr />
+            <div class="snake">
+                <h3>Jogo da Cobrinha</h3>
+                <canvas id="snake-canvas" width="240" height="240" aria-label="Canvas do jogo da cobrinha"></canvas>
+                <div class="snake-controls">
+                    <button id="snake-start" type="button">Iniciar</button>
+                    <button id="snake-pause" type="button">Pausar</button>
+                    <button id="snake-reset" type="button">Reiniciar</button>
+                </div>
+                <div id="snake-score" class="message-info">Score: 0 | High: 0</div>
+            </div>
+        </aside>
+
+        <main class="main">
+            <div class="container">
+                <div class="header">
+                    <h1>Login</h1>
+                    <p style="color:#6b7280; margin:0;">Entre na sua conta ou crie um novo usuário</p>
+                </div>
+
+                <div class="forms">
+                    <div class="form-card">
+                        <h2>Entrar</h2>
+                        <div th:if="${erro}" class="message-error">
+                            <p th:text="${erro}"></p>
+                        </div>
+                        <div th:if="${sucesso}" class="message-success">
+                            <p th:text="${sucesso}"></p>
+                        </div>
+                        <form method="post" action="/login">
+                            <label for="email">Email:</label>
+                            <input id="email" name="email" type="email" required />
+                            <br />
+                            <label for="senha">Senha:</label>
+                            <input id="senha" name="senha" type="password" required minlength="6" />
+                            <br />
+                            <button type="submit">Entrar</button>
+                        </form>
+                    </div>
+
+                    <div class="form-card">
+                        <h2>Cadastro</h2>
+                        <div id="cadastro-mensagem"></div>
+                        <form id="cadastroForm">
+                            <label for="nome">Nome:</label>
+                            <input id="nome" name="nome" type="text" required />
+                            <br />
+                            <label for="emailCadastro">Email:</label>
+                            <input id="emailCadastro" name="email" type="email" required />
+                            <br />
+                            <label for="senhaCadastro">Senha:</label>
+                            <input id="senhaCadastro" name="senha" type="password" required minlength="6" />
+                            <br />
+                            <button type="submit">Cadastrar</button>
+                        </form>
+                    </div>
+                </div>
+                    <!-- Tabela de usuários -->
+                <div class="users-table-card" style="margin-top:1.5rem">
+                    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:0.5rem">
+                        <h2 style="margin:0">Usuários cadastrados</h2>
+                        <div>
+                            <button id="refreshUsers" type="button">Atualizar</button>
+                        </div>
+                    </div>
+                    <div class="table-responsive">
+                        <table id="usersTable">
+                            <thead>
+                                <tr>
+                                    <th>Nome</th>
+                                    <th>Email</th>
+                                    <th>Senha</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <!-- Linhas carregadas via JS -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                <!-- Pomodoro -->
+                <div class="pomodoro-card" style="margin-top:1.5rem">
+                    <div style="display:flex;align-items:center;justify-content:space-between">
+                        <h2 style="margin:0">Pomodoro</h2>
+                        <div style="font-size:0.9rem;color:#6b7280">Sessões: <span id="pomSessions">0</span></div>
+                    </div>
+                    <div class="pomodoro-display" id="pomDisplay">25:00</div>
+                    <div style="display:flex;gap:0.5rem;margin-top:0.5rem;align-items:center">
+                        <label for="pomMode">Modo:</label>
+                        <select id="pomMode">
+                            <option value="work">Trabalho (25)</option>
+                            <option value="short">Pausa curta (5)</option>
+                            <option value="long">Pausa longa (15)</option>
+                        </select>
+                        <button id="pomStart" type="button">Iniciar</button>
+                        <button id="pomPause" type="button">Pausar</button>
+                        <button id="pomReset" type="button">Reiniciar</button>
+                    </div>
+                    <div style="margin-top:0.5rem;color:#6b7280;font-size:0.9rem">Dica: use o modo Trabalho para focar, a pausa curta para descanso rápido.</div>
+                </div>
+                <!-- Financial: Depósitos (soma) e Pagamentos (retira do saldo). Imagens mudam conforme número de depósitos. -->
+                <div class="finance-section" style="margin-top:1.5rem">
+                    <div class="finance-grid">
+                        <div class="finance-card" id="card-deposits">
+                            <h3>Adicionar Dinheiro</h3>
+                            <form id="depositForm">
+                                <input name="valor" placeholder="Valor" type="number" step="0.01" required />
+                                <button type="submit">Adicionar</button>
+                            </form>
+                            <div class="table-responsive">
+                                <table class="finance-table" data-type="deposits">
+                                    <thead><tr><th>#</th><th>Valor</th><th></th></tr></thead>
+                                    <tbody></tbody>
+                                    <tfoot><tr><td>Total de depósitos</td><td class="total">0.00</td><td></td></tr></tfoot>
+                                </table>
+                            </div>
+                        </div>
+
+                        <div class="finance-card" id="card-payments">
+                            <h3>Pagamento</h3>
+                            <form id="paymentForm">
+                                <input name="desc" placeholder="Descrição" required />
+                                <input name="valor" placeholder="Valor" type="number" step="0.01" required />
+                                <button type="submit">Pagar</button>
+                            </form>
+                            <div class="table-responsive">
+                                <table class="finance-table" data-type="payments">
+                                    <thead><tr><th>Descrição</th><th>Valor</th><th></th></tr></thead>
+                                    <tbody></tbody>
+                                    <tfoot><tr><td>Saldo</td><td class="total" id="balance">0.00</td><td></td></tr></tfoot>
+                                </table>
+                            </div>
+                        </div>
+
+                        <div class="finance-image" style="grid-column:1/-1;text-align:center;margin-top:0.75rem">
+                            <img id="finance-img" src="" alt="Banner financeiro" style="max-width:600px;display:block;" />
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
 
     <script>
         const form = document.getElementById('cadastroForm');
@@ -77,6 +267,359 @@
                 mensagemDiv.textContent = 'Erro de rede: ' + err.message;
             }
         });
+    </script>
+    <script>
+        // Notepad localStorage
+        const notepad = document.getElementById('notepad');
+        const saveBtn = document.getElementById('saveNote');
+        const clearBtn = document.getElementById('clearNote');
+        const notepadMsg = document.getElementById('notepad-msg');
+
+        const STORAGE_KEY = 'crudUsuarios.notepad';
+
+        function showNotepadMsg(text, color = '#2e8b57'){
+            notepadMsg.textContent = text;
+            notepadMsg.style.color = color;
+            setTimeout(()=>{ notepadMsg.textContent = ''; }, 3000);
+        }
+
+        // Carrega nota salva
+        const saved = localStorage.getItem(STORAGE_KEY);
+        if (saved) notepad.value = saved;
+
+        saveBtn.addEventListener('click', ()=>{
+            localStorage.setItem(STORAGE_KEY, notepad.value);
+            showNotepadMsg('Nota salva com sucesso!');
+        });
+
+        clearBtn.addEventListener('click', ()=>{
+            notepad.value = '';
+            localStorage.removeItem(STORAGE_KEY);
+            showNotepadMsg('Nota apagada', '#c0392b');
+        });
+    </script>
+    <script>
+        // Mini calculadora
+        const aInput = document.getElementById('calc-a');
+        const bInput = document.getElementById('calc-b');
+        const opSelect = document.getElementById('calc-op');
+        const calcBtn = document.getElementById('calc-calc');
+        const calcClear = document.getElementById('calc-clear');
+        const calcResult = document.getElementById('calc-result');
+
+        function calcular(){
+            const a = parseFloat(aInput.value || '0');
+            const b = parseFloat(bInput.value || '0');
+            const op = opSelect.value;
+            let res;
+            if(op === '+') res = a + b;
+            else if(op === '-') res = a - b;
+            else if(op === '*') res = a * b;
+            else if(op === '/') {
+                if(b === 0){ calcResult.style.color = '#c0392b'; calcResult.textContent = 'Erro: divisão por zero'; return; }
+                res = a / b;
+            }
+            calcResult.style.color = '#2b7ae4';
+            calcResult.textContent = 'Resultado: ' + res;
+        }
+
+        calcBtn.addEventListener('click', calcular);
+        calcClear.addEventListener('click', ()=>{ aInput.value=''; bInput.value=''; opSelect.value='+'; calcResult.textContent=''; });
+    </script>
+    <script>
+        // Tic-tac-toe (Jogo da Velha)
+        const tttBoard = document.getElementById('ttt-board');
+        const tttCells = Array.from(document.querySelectorAll('.ttt-cell'));
+        const tttStatus = document.getElementById('ttt-status');
+        const tttReset = document.getElementById('ttt-reset');
+
+        let tttState = Array(9).fill(null); // 'X' or 'O'
+        let tttTurn = 'X';
+        let tttOver = false;
+
+        const WINNING = [
+            [0,1,2],[3,4,5],[6,7,8],
+            [0,3,6],[1,4,7],[2,5,8],
+            [0,4,8],[2,4,6]
+        ];
+
+        function renderTTT(){
+            tttCells.forEach((cell, idx) => { cell.textContent = tttState[idx] || ''; });
+            if(tttOver) return;
+            tttStatus.textContent = 'Turno: ' + tttTurn;
+        }
+
+        function checkWin(){
+            for(const line of WINNING){
+                const [a,b,c] = line;
+                if(tttState[a] && tttState[a] === tttState[b] && tttState[a] === tttState[c]){
+                    return tttState[a];
+                }
+            }
+            if(tttState.every(Boolean)) return 'draw';
+            return null;
+        }
+
+        function applyCellClasses(){
+            tttCells.forEach((cell, idx) => {
+                cell.classList.remove('x','o','winner');
+                const v = tttState[idx];
+                if(v === 'X') cell.classList.add('x');
+                else if(v === 'O') cell.classList.add('o');
+            });
+        }
+
+        function highlightWinning(line){
+            line.forEach(i => tttCells[i].classList.add('winner'));
+        }
+
+        tttCells.forEach((cell, idx) => {
+            cell.addEventListener('click', ()=>{
+                if(tttOver || tttState[idx]) return;
+                tttState[idx] = tttTurn;
+                applyCellClasses();
+                const result = checkWin();
+                if(result === 'draw'){
+                    tttOver = true;
+                    tttStatus.textContent = 'Empate!';
+                } else if(result){
+                    tttOver = true;
+                    tttStatus.textContent = 'Vencedor: ' + result;
+                    // destaque as células vencedoras
+                    const winningLine = WINNING.find(line => {
+                        const [a,b,c] = line;
+                        return tttState[a] && tttState[a] === tttState[b] && tttState[a] === tttState[c];
+                    });
+                    if(winningLine) highlightWinning(winningLine);
+                } else {
+                    tttTurn = (tttTurn === 'X') ? 'O' : 'X';
+                    tttStatus.textContent = 'Turno: ' + tttTurn;
+                }
+                renderTTT();
+            });
+        });
+
+        tttReset.addEventListener('click', ()=>{
+            tttState = Array(9).fill(null);
+            tttTurn = 'X';
+            tttOver = false;
+            tttStatus.textContent = 'Novo jogo';
+            renderTTT();
+        });
+
+        // Inicializa
+        tttStatus.textContent = 'Turno: ' + tttTurn;
+        renderTTT();
+    </script>
+    <script>
+        // Snake (Jogo da Cobrinha) - versão simples
+        const canvas = document.getElementById('snake-canvas');
+        const ctx = canvas.getContext('2d');
+        const startBtn = document.getElementById('snake-start');
+        const pauseBtn = document.getElementById('snake-pause');
+        const resetBtn = document.getElementById('snake-reset');
+        const scoreEl = document.getElementById('snake-score');
+
+        const CELL = 12; // size in px
+        const COLS = canvas.width / CELL; // 20
+        const ROWS = canvas.height / CELL; // 20
+
+        let snake = [{x: Math.floor(COLS/2), y: Math.floor(ROWS/2)}];
+        let dir = {x:1,y:0};
+        let food = null;
+        let interval = null;
+        let speed = 120; // ms
+        let running = false;
+        let score = 0;
+        const S_KEY = 'crudUsuarios.snake.high';
+        let high = parseInt(localStorage.getItem(S_KEY) || '0',10);
+        scoreEl.textContent = `Score: ${score} | High: ${high}`;
+
+        function placeFood(){
+            while(true){
+                const fx = Math.floor(Math.random()*COLS);
+                const fy = Math.floor(Math.random()*ROWS);
+                if(!snake.some(s => s.x===fx && s.y===fy)){ food = {x:fx,y:fy}; break; }
+            }
+        }
+
+        function draw(){
+            ctx.clearRect(0,0,canvas.width,canvas.height);
+            // draw food
+            if(food){ ctx.fillStyle = '#e05959'; ctx.fillRect(food.x*CELL+2, food.y*CELL+2, CELL-4, CELL-4); }
+            // draw snake
+            for(let i=0;i<snake.length;i++){
+                ctx.fillStyle = i===0 ? '#2b7ae4' : '#155bd6';
+                const s = snake[i];
+                ctx.fillRect(s.x*CELL+1, s.y*CELL+1, CELL-2, CELL-2);
+            }
+        }
+
+        function step(){
+            const head = {x: snake[0].x + dir.x, y: snake[0].y + dir.y};
+            // wall collision
+            if(head.x < 0 || head.x >= COLS || head.y < 0 || head.y >= ROWS){ gameOver(); return; }
+            // self collision
+            if(snake.some(s => s.x===head.x && s.y===head.y)){ gameOver(); return; }
+            snake.unshift(head);
+            // food
+            if(food && head.x===food.x && head.y===food.y){
+                score += 1;
+                if(score > high){ high = score; localStorage.setItem(S_KEY, String(high)); }
+                scoreEl.textContent = `Score: ${score} | High: ${high}`;
+                placeFood();
+            } else {
+                snake.pop();
+            }
+            draw();
+        }
+
+        function gameOver(){
+            running = false;
+            clearInterval(interval); interval = null;
+            alert('Game Over! Score: ' + score);
+        }
+
+        function startGame(){
+            if(running) return;
+            if(!food) placeFood();
+            running = true; interval = setInterval(step, speed);
+        }
+
+        function pauseGame(){
+            running = false; if(interval){ clearInterval(interval); interval = null; }
+        }
+
+        function resetGame(){
+            pauseGame();
+            snake = [{x: Math.floor(COLS/2), y: Math.floor(ROWS/2)}];
+            dir = {x:1,y:0};
+            score = 0; scoreEl.textContent = `Score: ${score} | High: ${high}`;
+            placeFood(); draw();
+        }
+
+        document.addEventListener('keydown', (e) => {
+            const k = e.key;
+            if(k==='ArrowUp' && dir.y!==1) dir = {x:0,y:-1};
+            else if(k==='ArrowDown' && dir.y!==-1) dir = {x:0,y:1};
+            else if(k==='ArrowLeft' && dir.x!==1) dir = {x:-1,y:0};
+            else if(k==='ArrowRight' && dir.x!==-1) dir = {x:1,y:0};
+        });
+
+        startBtn.addEventListener('click', startGame);
+        pauseBtn.addEventListener('click', pauseGame);
+        resetBtn.addEventListener('click', resetGame);
+
+        // inicializa
+        placeFood(); draw();
+    </script>
+    <script>
+        // Tabela de usuários - busca via API
+        const usersTableBody = document.querySelector('#usersTable tbody');
+        const refreshBtn = document.getElementById('refreshUsers');
+
+        async function loadUsers(){
+            usersTableBody.innerHTML = '<tr><td colspan="3">Carregando...</td></tr>';
+            try{
+                const resp = await fetch('/api/usuarios');
+                if(!resp.ok) throw new Error('Status ' + resp.status);
+                const users = await resp.json();
+                if(!Array.isArray(users)) usersTableBody.innerHTML = '<tr><td colspan="3">Nenhum dado</td></tr>';
+                else{
+                    usersTableBody.innerHTML = users.map(u => `
+                        <tr>
+                            <td>${escapeHtml(u.nomeUsuario || u.nome || '')}</td>
+                            <td>${escapeHtml(u.emailUsuario || u.email || '')}</td>
+                            <td>${escapeHtml(u.senhaUsuario || u.senha || '')}</td>
+                        </tr>
+                    `).join('');
+                }
+            }catch(err){
+                usersTableBody.innerHTML = '<tr><td colspan="3">Erro ao carregar: '+err.message+'</td></tr>';
+            }
+        }
+
+        function escapeHtml(str){
+            return String(str)
+                .replace(/&/g,'&amp;')
+                .replace(/</g,'&lt;')
+                .replace(/>/g,'&gt;')
+                .replace(/"/g,'&quot;')
+                .replace(/'/g,'&#039;');
+        }
+
+        refreshBtn.addEventListener('click', loadUsers);
+        // carrega ao abrir
+        loadUsers();
+    </script>
+    <script>
+        // Novo financeiro: depósitos acumulativos + formulário de pagamento. Imagens mudam com número de depósitos.
+        const FIN_KEY = 'crudUsuarios.finance2';
+    const IMG_PATH = '/imagens/'; // pasta onde você disse que as imagens estão (resources/static/imagens)
+    const BANNER_NAME = 'banner.png'; // imagem padrão quando não há depósitos
+        // imagens esperadas: img0.png, img1.png, img2.png, ... ajuste conforme seus nomes
+    // supondo que as 8 imagens estejam em src/main/resources/static/imagens/ com nomes img1.png..img8.png
+    const IMG_NAMES = ['img1.png','img2.png','img3.png','img4.png','img5.png','img6.png','img7.png','img8.png'];
+
+        let data = JSON.parse(localStorage.getItem(FIN_KEY) || 'null') || { deposits: [], payments: [] };
+
+        const depositForm = document.getElementById('depositForm');
+        const paymentForm = document.getElementById('paymentForm');
+        const depositsTable = document.querySelector('table[data-type="deposits"] tbody');
+        const depositsTotalEl = document.querySelector('table[data-type="deposits"] .total');
+        const paymentsTable = document.querySelector('table[data-type="payments"] tbody');
+        const balanceEl = document.getElementById('balance');
+        const financeImg = document.getElementById('finance-img');
+
+        function save(){ localStorage.setItem(FIN_KEY, JSON.stringify(data)); }
+
+        function calcDepositsTotal(){ return data.deposits.reduce((s,i)=>s+Number(i.valor||0),0); }
+        function calcPaymentsTotal(){ return data.payments.reduce((s,i)=>s+Number(i.valor||0),0); }
+        function calcBalance(){ return calcDepositsTotal() - calcPaymentsTotal(); }
+
+        function render(){
+            // deposits
+            depositsTable.innerHTML = data.deposits.map((d,idx)=>`<tr data-idx="${idx}"><td>${idx+1}</td><td>${Number(d.valor).toFixed(2)}</td><td><button class="rem-dep" data-idx="${idx}">Remover</button></td></tr>`).join('') || '<tr><td colspan="3">Nenhum depósito</td></tr>';
+            depositsTotalEl.textContent = calcDepositsTotal().toFixed(2);
+            // payments
+            paymentsTable.innerHTML = data.payments.map((p,idx)=>`<tr data-idx="${idx}"><td>${escapeHtml(p.desc)}</td><td>${Number(p.valor).toFixed(2)}</td><td><button class="rem-pay" data-idx="${idx}">Remover</button></td></tr>`).join('') || '<tr><td colspan="3">Nenhum pagamento</td></tr>';
+            balanceEl.textContent = calcBalance().toFixed(2);
+            // imagem conforme número de depósitos
+            const count = data.deposits.length;
+            if(count===0){
+                // mostrar banner padrão (se existir)
+                financeImg.style.display='inline-block';
+                financeImg.src = IMG_PATH + BANNER_NAME;
+            } else {
+                // mapa: 1 depósito -> img1, 2 -> img2, ... n -> imgN (limite em 8)
+                const idx = Math.min(count, IMG_NAMES.length) - 1;
+                financeImg.style.display='inline-block';
+                financeImg.src = IMG_PATH + IMG_NAMES[idx];
+            }
+
+            // evitar mostrar imagem quebrada: se der erro ao carregar, oculta
+            financeImg.onerror = function(){ financeImg.style.display='none'; };
+
+            // attach handlers
+            document.querySelectorAll('.rem-dep').forEach(b => b.addEventListener('click', ()=>{ const i=Number(b.getAttribute('data-idx')); data.deposits.splice(i,1); save(); render(); }));
+            document.querySelectorAll('.rem-pay').forEach(b => b.addEventListener('click', ()=>{ const i=Number(b.getAttribute('data-idx')); data.payments.splice(i,1); save(); render(); }));
+        }
+
+        depositForm.addEventListener('submit', e=>{
+            e.preventDefault();
+            const v = parseFloat(depositForm.elements['valor'].value) || 0;
+            data.deposits.push({ valor: v }); save(); render(); depositForm.reset();
+        });
+
+        paymentForm.addEventListener('submit', e=>{
+            e.preventDefault();
+            const desc = paymentForm.elements['desc'].value || '';
+            const v = parseFloat(paymentForm.elements['valor'].value) || 0;
+            data.payments.push({ desc, valor: v }); save(); render(); paymentForm.reset();
+        });
+
+        // inicializa imagem e render
+        render();
     </script>
 </body>
 </html>

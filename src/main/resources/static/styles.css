@@ -1,0 +1,211 @@
+/* Estilos para a página de login/cadastro */
+:root{
+    --bg: #f4f7fb;
+    --card-bg: #ffffff;
+    --accent: #2b7ae4;
+    --accent-dark: #1755c6;
+    --danger: #e05b5b;
+    --success: #2e8b57;
+    --text: #2d2d2d;
+}
+
+html,body{
+    height:100%;
+    margin:0;
+    font-family: Inter, Roboto, "Segoe UI", Arial, sans-serif;
+    background: linear-gradient(180deg,#eef3fb 0%, var(--bg) 100%);
+    color:var(--text);
+}
+
+body{
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    padding:2rem;
+}
+
+.container{
+    width:100%;
+    max-width:1000px;
+}
+
+.header{
+    text-align:center;
+    margin-bottom:1rem;
+}
+
+.forms{
+    display:flex;
+    gap:2rem;
+    align-items:flex-start;
+    justify-content:center;
+}
+
+.form-card{
+    background:var(--card-bg);
+    padding:1.5rem;
+    border-radius:8px;
+    box-shadow:0 6px 18px rgba(30,50,80,0.06);
+    width:48%;
+    box-sizing:border-box;
+}
+
+.form-card h2{
+    margin-top:0;
+}
+
+label{
+    display:inline-block;
+    margin-top:0.5rem;
+    margin-bottom:0.25rem;
+    font-weight:600;
+}
+
+input[type="text"],
+input[type="email"],
+input[type="password"]{
+    width:100%;
+    padding:0.5rem 0.6rem;
+    border-radius:6px;
+    border:1px solid #dfe7f2;
+    background: #fbfdff;
+    box-sizing:border-box;
+}
+
+button{
+    margin-top:0.75rem;
+    background:var(--accent);
+    color:white;
+    border:none;
+    padding:0.6rem 1rem;
+    border-radius:6px;
+    cursor:pointer;
+    font-weight:600;
+}
+button:hover{background:var(--accent-dark)}
+
+#cadastro-mensagem{min-height:1.2rem}
+
+.message-error{color:var(--danger); margin-bottom:1rem}
+.message-success{color:var(--success); margin-bottom:1rem}
+
+/* Responsivo: empilha formulários em telas pequenas */
+@media (max-width:800px){
+    .forms{flex-direction:column}
+    .form-card{width:100%}
+}
+
+/* Layout com sidebar à esquerda */
+.page{
+    display:flex;
+    width:100%;
+    max-width:1200px;
+    gap:1.25rem;
+}
+
+.sidebar{
+    width:260px;
+    background:var(--card-bg);
+    border-radius:8px;
+    padding:1rem;
+    box-shadow:0 6px 18px rgba(30,50,80,0.06);
+    box-sizing:border-box;
+    display:flex;
+    flex-direction:column;
+    gap:0.5rem;
+}
+
+.sidebar h2{margin:0 0 0.25rem 0}
+.sidebar textarea{
+    width:100%;
+    min-height:220px;
+    max-height:60vh;
+    padding:0.6rem;
+    border-radius:6px;
+    border:1px solid #dfe7f2;
+    resize:vertical;
+    box-sizing:border-box;
+}
+
+.sidebar-actions{display:flex;gap:0.5rem;margin-top:0.5rem}
+.sidebar button{flex:1}
+
+.main{flex:1}
+
+/* Responsivo: move sidebar para cima em telas menores */
+@media (max-width:1000px){
+    .page{flex-direction:column}
+    .sidebar{width:100%}
+}
+
+/* Calculadora */
+.calculator{margin-top:0.75rem}
+.calculator h3{margin:0 0 0.5rem 0}
+.calculator .calc-row{display:flex;gap:0.5rem}
+.calculator input[type="number"], .calculator select{padding:0.45rem;border-radius:6px;border:1px solid #dfe7f2;background:#fbfdff}
+.calculator .calc-actions{display:flex;gap:0.5rem;margin-top:0.5rem}
+.calculator #calc-result{margin-top:0.5rem;color:var(--text);font-weight:600}
+
+/* Tic-tac-toe */
+.tictactoe{margin-top:0.75rem}
+.tictactoe h3{margin:0 0 0.5rem 0}
+.ttt-board{
+    display:grid;
+    grid-template-columns:repeat(3, minmax(0,1fr));
+    gap:8px;
+}
+.ttt-cell{
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    width:100%;
+    padding:0;
+    aspect-ratio:1/1;
+    font-size:1.4rem;
+    border-radius:6px;
+    border:1px solid #dfe7f2;
+    background:#fbfdff;
+    cursor:pointer;
+}
+.ttt-cell.x{ color: #155bd6; font-weight:700; }
+.ttt-cell.o{ color: #c0392b; font-weight:700; }
+.ttt-cell.winner{ background: linear-gradient(90deg, rgba(43,122,228,0.12), rgba(43,122,228,0.06)); border-color: var(--accent); }
+.ttt-cell:focus{outline:2px solid #2b7ae4}
+.ttt-actions{margin-top:0.5rem}
+.ttt-actions button{width:100%; padding:0.5rem; border-radius:6px; background:#f3f4f6; border:1px solid #dfe7f2}
+
+/* Snake */
+.snake{margin-top:0.75rem}
+.snake canvas{display:block; width:100%; height:auto; background:linear-gradient(180deg,#ffffff,#fbfdff); border-radius:6px; border:1px solid #dfe7f2}
+.snake-controls{display:flex;gap:0.4rem;margin-top:0.5rem}
+.snake-controls button{flex:1;padding:0.45rem;border-radius:6px;background:#f3f4f6;border:1px solid #dfe7f2}
+.snake-controls button:hover{background:#e9eef8}
+.snake .message-info{margin-top:0.4rem}
+
+/* Users table */
+.users-table-card{background:var(--card-bg); padding:1rem; border-radius:8px; box-shadow:0 6px 18px rgba(30,50,80,0.04)}
+.table-responsive{overflow:auto}
+table{width:100%;border-collapse:collapse}
+table thead th{background:#f8fafc;padding:0.6rem;text-align:left;font-weight:700;border-bottom:1px solid #e6eef8}
+table tbody td{padding:0.6rem;border-bottom:1px solid #f1f5f9}
+button#refreshUsers{padding:0.45rem 0.6rem;border-radius:6px;border:1px solid #dfe7f2;background:#f3f4f6}
+
+/* Pomodoro */
+.pomodoro-card{background:var(--card-bg); padding:1rem; border-radius:8px; box-shadow:0 6px 18px rgba(30,50,80,0.04)}
+.pomodoro-display{font-size:2rem;font-weight:700;padding:0.75rem 1rem;margin-top:0.6rem;background:#f8fafc;border-radius:8px;border:1px solid #e6eef8;display:inline-block}
+#pomMode{padding:0.35rem;border-radius:6px;border:1px solid #dfe7f2}
+#pomStart,#pomPause,#pomReset{padding:0.4rem 0.6rem;border-radius:6px;border:1px solid #dfe7f2;background:#f3f4f6}
+
+/* Financeiro */
+.finance-section{width:100%}
+.finance-grid{display:grid;grid-template-columns:1fr 1fr;gap:1rem}
+.finance-card{background:var(--card-bg);padding:1rem;border-radius:8px;box-shadow:0 6px 18px rgba(30,50,80,0.04)}
+.finance-form{display:flex;gap:0.5rem;margin-bottom:0.5rem}
+.finance-form input{flex:1;padding:0.4rem;border-radius:6px;border:1px solid #dfe7f2}
+.finance-form button{padding:0.4rem 0.6rem;border-radius:6px;background:#2b7ae4;color:white;border:none}
+.finance-table thead th{background:#fafbfd;padding:0.45rem;text-align:left;font-weight:700;border-bottom:1px solid #e6eef8}
+.finance-table tbody td{padding:0.45rem;border-bottom:1px solid #f1f5f9}
+.finance-table tfoot td{padding:0.45rem;font-weight:700}
+
+.finance-image img{border-radius:8px;border:1px solid #e6eef8;max-width:600px;width:100%;height:auto;display:block;margin:0 auto}
+@media (max-width:1000px){ .finance-grid{grid-template-columns:1fr} .finance-image{grid-column:1} }
